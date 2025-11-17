@@ -1,38 +1,32 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import tseslint from 'typescript-eslint'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
-import importPlugin from 'eslint-plugin-import';
+import reactHooks from 'eslint-plugin-react-hooks';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
-import prettier from 'eslint-plugin-prettier';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import prettierRecommended from 'eslint-plugin-prettier/recommended';
+import js from '@eslint/js';
+import importPlugin from 'eslint-plugin-import';
 
-export default defineConfig([
-  globalIgnores(['dist']),
+export default [
+  {
+    ignores: ['dist/'],
+  },
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
     files: ['**/*.{ts,tsx}'],
     plugins: {
-      react,
+      react: react,
+      'react-hooks': reactHooks,
+      'jsx-a11y': jsxA11y,
+      'react-refresh': reactRefresh,
       import: importPlugin,
-      jsxA11y,
-      prettier,
     },
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-      reactHooks.configs['recommended-latest'],
-      reactRefresh.configs.vite,
-      react.configs.recommended,
-      jsxA11y.configs.recommended,
-      'plugin:prettier/recommended',
-    ],
     languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      globals: globals.browser,
-      parser: tseslint.parser,
+      globals: {
+        ...globals.browser,
+      },
       parserOptions: {
         ecmaFeatures: {
           jsx: true,
@@ -44,5 +38,14 @@ export default defineConfig([
         version: 'detect',
       },
     },
+    rules: {
+      ...react.configs.recommended.rules,
+      ...react.configs['jsx-runtime'].rules,
+      ...reactHooks.configs.recommended.rules,
+      ...jsxA11y.configs.recommended.rules,
+      'react-refresh/only-export-components': 'off',
+      'react/prop-types': 'off',
+    },
   },
-])
+  prettierRecommended,
+];
